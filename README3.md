@@ -169,7 +169,7 @@ O projeto contribui com o ODS 9 ao oferecer **inovação acessível** e **infrae
 
 ## 👤 Autor
 
-**SEU NOME** · Curso: [COMPLETAR] · Instituição: [COMPLETAR]
+**SEU NOME** · Curso: [ADS] · Instituição: [Unig]
 Professor: Hamilcar Silva
 
 ## 📄 Licença
