@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuidar de Perto – Painel de monitoramento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2F5F3;--surface:#fff;--ink:#1B2A2F;--muted:#55666B;--line:#D9E1DD;--side:#17383A;--accent:#1F7A6D;--accent-soft:#DDF0EB;--bad:#B3261E;--bad-soft:#FBE4E1;--r:14px}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:"Atkinson Hyperlegible",system-ui,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:18px;line-height:1.45;display:grid;grid-template-columns:230px 1fr;min-height:100vh}
+button,input,select{font:inherit}
+:focus-visible{outline:3px solid #E0A100;outline-offset:2px}
+aside{background:var(--side);color:#E6F2EF;padding:24px 16px;position:sticky;top:0;height:100vh}
+.brand{font-weight:700;font-size:22px;margin:0 8px 28px}
+.brand small{display:block;font-weight:400;font-size:14px;opacity:.75}
+nav{display:flex;flex-direction:column;gap:6px}
+nav button{background:none;border:0;color:inherit;text-align:left;padding:12px 14px;border-radius:10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+nav button[aria-current="page"]{background:rgba(255,255,255,.16);font-weight:700}
+nav button:hover{background:rgba(255,255,255,.1)}
+.badge{background:#fff;color:var(--bad);border-radius:99px;font-size:14px;font-weight:700;padding:0 8px;min-width:24px;text-align:center}
+.badge[hidden]{display:none}
+main{padding:28px 32px 40px;max-width:1000px;width:100%}
+header.top{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-bottom:22px}
+h1{font-size:28px;margin:0}
+h2{font-size:20px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;background:var(--accent-soft);color:#0F4F46;font-weight:700;font-size:16px}
+.pill i{width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.pill.off{background:var(--bad-soft);color:var(--bad)}
+.pill.off i{background:var(--bad)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.card.alert{border:2px solid var(--bad);background:var(--bad-soft)}
+.card.dim{opacity:.55}
+.big{font-size:44px;font-weight:700;line-height:1.1;margin:10px 0 4px}
+.muted{color:var(--muted)}
+.chart{width:100%;height:auto;display:block;margin-top:10px}
+.chart text{font-size:11px;fill:var(--muted);font-family:inherit}
+.chart .grid-l{stroke:var(--line);stroke-width:1}
+.chart .line{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round}
+.chart .area{fill:var(--accent-soft);opacity:.7}
+.chart .band{fill:#DDF0EB;opacity:.55}
+.chart .bar{fill:var(--accent)}
+.view[hidden]{display:none}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:6px}
+select,input{border:1.5px solid #9FB0AB;border-radius:10px;padding:10px 12px;background:#fff;color:var(--ink);width:100%}
+select{width:auto}
+label{display:block;font-weight:700;margin-bottom:4px}
+.field{margin-bottom:16px;max-width:360px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:12px 20px;font-weight:700;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
+.btn.small{padding:8px 14px;font-size:16px}
+.alerts{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.alerts li{background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--bad);border-radius:var(--r);padding:16px 18px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.alerts li.seen{border-left-color:var(--line);opacity:.7}
+.empty{background:var(--surface);border:1px dashed #9FB0AB;border-radius:var(--r);padding:28px;text-align:center;color:var(--muted)}
+.demo{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+#msg{color:var(--accent);font-weight:700;margin-left:10px}
+@media (max-width:760px){
+ body{grid-template-columns:1fr;font-size:17px}
+ aside{position:fixed;bottom:0;left:0;right:0;top:auto;height:auto;padding:6px;z-index:5}
+ .brand{display:none}
+ nav{flex-direction:row;justify-content:space-around}
+ nav button{flex-direction:column;gap:2px;font-size:14px;padding:8px 6px;text-align:center}
+ main{padding:20px 16px 100px}
+ .grid{grid-template-columns:1fr}
+ h1{font-size:24px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<aside>
+  <p class="brand">Cuidar de Perto<small>Monitoramento em casa</small></p>
+  <nav aria-label="Seções do painel">
+    <button data-v="geral" aria-current="page">Visão Geral</button>
+    <button data-v="historico">Histórico</button>
+    <button data-v="alertas">Alertas <span class="badge" id="badge" hidden>0</span></button>
+    <button data-v="config">Configurações</button>
+  </nav>
+</aside>
+
+<main>
+  <header class="top">
+    <div>
+      <h1 id="titulo">Casa de Dona Maria</h1>
+      <p class="sub">Simulação com dados fictícios para demonstração</p>
+    </div>
+    <span class="pill" id="status" role="status"><i></i><span id="statusTxt">Online</span></span>
+  </header>
+
+  <section class="view" id="v-geral">
+    <div class="grid">
+      <article class="card" id="cMov">
+        <h2>Movimentação</h2>
+        <div class="big" id="movTxt">–</div>
+        <p class="muted" id="movSub"></p>
+      </article>
+      <article class="card" id="cTemp">
+        <h2>Temperatura ambiente</h2>
+        <div class="big" id="tempTxt">–</div>
+        <p class="muted" id="tempSub"></p>
+      </article>
+    </div>
+    <article class="card">
+      <h2>Temperatura nas últimas 24 horas</h2>
+      <p class="sub">A faixa verde mostra o intervalo configurado como confortável.</p>
+      <svg class="chart" id="chGeral" viewBox="0 0 640 220" role="img" aria-label="Gráfico de temperatura das últimas 24 horas"></svg>
+    </article>
+  </section>
+
+  <section class="view" id="v-historico" hidden>
+    <div class="row">
+      <h2 style="margin:0 8px 0 0">Histórico</h2>
+      <label for="periodo" class="sr" style="margin:0;position:absolute;left:-9999px">Período</label>
+      <select id="periodo"><option value="dia">Últimas 24 horas</option><option value="semana">Últimos 7 dias</option></select>
+    </div>
+    <article class="card" style="margin:14px 0 18px">
+      <h2 id="tTemp">Temperatura (°C)</h2>
+      <svg class="chart" id="chTemp" viewBox="0 0 640 220" role="img" aria-label="Gráfico de temperatura"></svg>
+    </article>
+    <article class="card">
+      <h2 id="tMov">Detecções de movimento</h2>
+      <svg class="chart" id="chMov" viewBox="0 0 640 220" role="img" aria-label="Gráfico de detecções de movimento"></svg>
+    </article>
+  </section>
+
+  <section class="view" id="v-alertas" hidden>
+    <h2 style="margin-bottom:14px">Alertas</h2>
+    <ul class="alerts" id="listaAlertas"></ul>
+  </section>
+
+  <section class="view" id="v-config" hidden>
+    <article class="card">
+      <h2 style="margin-bottom:14px">Limites dos alertas</h2>
+      <div class="field"><label for="fNome">Nome da pessoa acompanhada</label><input id="fNome" type="text" maxlength="40"></div>
+      <div class="field"><label for="fHoras">Avisar após quantas horas sem movimento</label><input id="fHoras" type="number" min="1" max="24" step="1"></div>
+      <div class="field"><label for="fMin">Temperatura mínima (°C)</label><input id="fMin" type="number" min="5" max="30" step="1"></div>
+      <div class="field"><label for="fMax">Temperatura máxima (°C)</label><input id="fMax" type="number" min="20" max="45" step="1"></div>
+      <button class="btn" id="salvar">Salvar configurações</button><span id="msg" role="status"></span>
+    </article>
+    <article class="card" style="margin-top:18px">
+      <h2>Modo demonstração</h2>
+      <p class="sub">Use estes botões na apresentação para mostrar como os alertas funcionam.</p>
+      <div class="demo">
+        <button class="btn ghost small" id="dQuieto">Simular longo tempo sem movimento</button>
+        <button class="btn ghost small" id="dCalor">Simular calor excessivo</button>
+        <button class="btn ghost small" id="dOff">Simular sensor offline</button>
+        <button class="btn small" id="dOk">Voltar ao normal</button>
+      </div>
+    </article>
+  </section>
+</main>
+
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)};
+var KEY="cuidar-de-perto-config";
+var cfg={nome:"Dona Maria",horas:4,tmin:18,tmax:30};
+try{Object.assign(cfg,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){}
+
+var s={temp:26.4,lastMove:Date.now()-12*60000,lastUpdate:Date.now(),online:true,quiet:false,hot:false,moveAlert:false,tempAlert:false,offAlert:false};
+var alerts=[];
+
+/* dados históricos simulados (sempre os mesmos) */
+var seed=7;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280}
+var curH=new Date().getHours();
+var dia=[];for(var i=0;i<24;i++){var h=(curH-23+i+24)%24;
+  dia.push({l:h+"h",t:+(23+4*Math.sin((h-9)/24*2*Math.PI)+rnd()).toFixed(1),m:(h<6||h>=22)?Math.round(rnd()*2):Math.round(4+rnd()*14)})}
+var nomes=["dom","seg","ter","qua","qui","sex","sáb"],semana=[];
+for(var d=6;d>=0;d--){var dt=new Date(Date.now()-d*86400000);
+  semana.push({l:nomes[dt.getDay()],t:+(24+rnd()*4).toFixed(1),m:Math.round(120+rnd()*80)})}
+
+function ago(ms){var m=Math.floor(ms/60000);if(ms<60000)return "agora mesmo";if(m<60)return "há "+m+" min";var h=Math.floor(m/60);return "há "+h+" h"+(m%60?" "+(m%60)+" min":"")}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+/* gráficos em SVG puro */
+function chart(el,vals,labels,o){
+  var W=640,H=220,L=40,R=12,T=12,B=26,pw=W-L-R,ph=H-T-B,n=vals.length,g="";
+  var lo=o.min,hi=o.max;
+  if(lo==null){lo=Math.min.apply(null,vals);hi=Math.max.apply(null,vals);var p=(hi-lo)*.2||1;lo=Math.floor(lo-p);hi=Math.ceil(hi+p)}
+  function y(v){return T+ph-(v-lo)/(hi-lo)*ph}
+  function x(i){return o.bars?L+pw/n*(i+.5):L+pw*i/(n-1)}
+  for(var k=0;k<=4;k++){var v=lo+(hi-lo)*k/4,yy=y(v);
+    g+='<line class="grid-l" x1="'+L+'" x2="'+(W-R)+'" y1="'+yy+'" y2="'+yy+'"/><text x="'+(L-6)+'" y="'+(yy+4)+'" text-anchor="end">'+Math.round(v)+'</text>'}
+  if(o.band){var a=Math.max(lo,o.band[0]),b=Math.min(hi,o.band[1]);if(b>a)g+='<rect class="band" x="'+L+'" y="'+y(b)+'" width="'+pw+'" height="'+(y(a)-y(b))+'"/>'}
+  var step=n>10?4:1;
+  labels.forEach(function(t,i){if(i%step===0||i===n-1)g+='<text x="'+x(i)+'" y="'+(H-6)+'" text-anchor="middle">'+t+'</text>'});
+  if(o.bars){var bw=Math.min(24,pw/n*.6);vals.forEach(function(v,i){g+='<rect class="bar" rx="3" x="'+(x(i)-bw/2)+'" y="'+y(v)+'" width="'+bw+'" height="'+Math.max(0,y(lo)-y(v))+'"/>'})}
+  else{var pts=vals.map(function(v,i){return x(i)+","+y(v)}).join(" ");
+    g+='<polygon class="area" points="'+L+","+y(lo)+" "+pts+" "+x(n-1)+","+y(lo)+'"/><polyline class="line" points="'+pts+'"/>'}
+  el.innerHTML=g}
+
+function drawGeral(){chart($("#chGeral"),dia.map(function(d){return d.t}),dia.map(function(d){return d.l}),{band:[cfg.tmin,cfg.tmax]})}
+function drawHist(){
+  var sem=$("#periodo").value==="semana",d=sem?semana:dia;
+  $("#tTemp").textContent=sem?"Temperatura média por dia (°C)":"Temperatura por hora (°C)";
+  $("#tMov").textContent=sem?"Detecções de movimento por dia":"Detecções de movimento por hora";
+  chart($("#chTemp"),d.map(function(x){return x.t}),d.map(function(x){return x.l}),{band:[cfg.tmin,cfg.tmax]});
+  chart($("#chMov"),d.map(function(x){return x.m}),d.map(function(x){return x.l}),{bars:true,min:0,max:Math.max.apply(null,d.map(function(x){return x.m}))+2})}
+
+/* alertas */
+function addAlert(tipo,msg){alerts.unshift({id:Date.now()+Math.random(),tipo:tipo,msg:msg,t:new Date(),visto:false});renderAlerts()}
+function renderAlerts(){
+  var novos=alerts.filter(function(a){return !a.visto}).length,b=$("#badge");
+  b.textContent=novos;b.hidden=!novos;
+  var ul=$("#listaAlertas");
+  if(!alerts.length){ul.innerHTML='<li class="empty" style="display:block;border:1px dashed #9FB0AB">Nenhum alerta por enquanto. Quando algo precisar de atenção, ele aparece aqui.</li>';return}
+  ul.innerHTML=alerts.map(function(a){
+    return '<li class="'+(a.visto?"seen":"")+'"><div><strong>'+esc(a.tipo)+'</strong><br>'+esc(a.msg)+'<br><span class="muted">'+a.t.toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})+'</span></div>'+
+    (a.visto?'<span class="muted">Visto</span>':'<button class="btn ghost small" data-id="'+a.id+'">Marcar como visto</button>')+'</li>'}).join("")}
+$("#listaAlertas").addEventListener("click",function(e){var id=e.target.getAttribute("data-id");if(!id)return;
+  alerts.forEach(function(a){if(String(a.id)===id)a.visto=true});renderAlerts()});
+
+/* simulação e regras */
+function tick(){
+  if(s.online){s.lastUpdate=Date.now();
+    var alvo=s.hot?cfg.tmax+3:26;s.temp+=(alvo-s.temp)*.25+(Math.random()-.5)*.3;
+    if(!s.quiet&&Math.random()<.3)s.lastMove=Date.now()}
+  check();live()}
+function check(){
+  if(!s.online){if(!s.offAlert){s.offAlert=true;addAlert("Sensor offline","Sem comunicação com os sensores. Os dados exibidos podem estar desatualizados.")}return}
+  s.offAlert=false;
+  var semMov=Date.now()-s.lastMove>cfg.horas*3600000;
+  if(semMov&&!s.moveAlert){s.moveAlert=true;addAlert("Sem movimento","Nenhum movimento detectado há mais de "+cfg.horas+" h. Vale ligar para conferir se está tudo bem.")}
+  if(!semMov)s.moveAlert=false;
+  var fora=s.temp>cfg.tmax||s.temp<cfg.tmin;
+  if(fora&&!s.tempAlert){s.tempAlert=true;addAlert("Temperatura fora da faixa","A temperatura está em "+s.temp.toFixed(1).replace(".",",")+" °C, fora do intervalo de "+cfg.tmin+" a "+cfg.tmax+" °C.")}
+  if(!fora)s.tempAlert=false}
+
+function live(){
+  var off=!s.online,semMov=Date.now()-s.lastMove,fora=s.temp>cfg.tmax||s.temp<cfg.tmin;
+  $("#titulo").textContent="Casa de "+cfg.nome;
+  var st=$("#status");st.classList.toggle("off",off);
+  $("#statusTxt").textContent=off?"Sensor offline · última atualização "+ago(Date.now()-s.lastUpdate):"Online · atualizado "+ago(Date.now()-s.lastUpdate);
+  $("#cMov").classList.toggle("dim",off);$("#cTemp").classList.toggle("dim",off);
+  var recente=semMov<5*60000;
+  $("#movTxt").textContent=off?"Sem dados":(recente?"Movimento detectado":"Sem movimento");
+  $("#movSub").textContent=off?"Aguardando o sensor voltar":"Último movimento "+ago(semMov);
+  $("#cMov").classList.toggle("alert",!off&&semMov>cfg.horas*3600000);
+  $("#tempTxt").textContent=off?"Sem dados":s.temp.toFixed(1).replace(".",",")+" °C";
+  $("#tempSub").textContent=off?"Aguardando o sensor voltar":(fora?"Fora da faixa de "+cfg.tmin+" a "+cfg.tmax+" °C":"Dentro da faixa de "+cfg.tmin+" a "+cfg.tmax+" °C");
+  $("#cTemp").classList.toggle("alert",!off&&fora)}
+
+/* navegação */
+function show(v){
+  document.querySelectorAll(".view").forEach(function(e){e.hidden=e.id!=="v-"+v});
+  document.querySelectorAll("nav button").forEach(function(b){if(b.dataset.v===v)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
+  if(v==="geral")drawGeral();if(v==="historico")drawHist();if(v==="alertas")renderAlerts();window.scrollTo(0,0)}
+document.querySelectorAll("nav button").forEach(function(b){b.addEventListener("click",function(){show(b.dataset.v)})});
+$("#periodo").addEventListener("change",drawHist);
+
+/* configurações */
+function fill(){$("#fNome").value=cfg.nome;$("#fHoras").value=cfg.horas;$("#fMin").value=cfg.tmin;$("#fMax").value=cfg.tmax}
+$("#salvar").addEventListener("click",function(){
+  var n=$("#fNome").value.trim()||"Dona Maria",h=parseInt($("#fHoras").value,10),a=parseFloat($("#fMin").value),b=parseFloat($("#fMax").value),m=$("#msg");
+  if(!(h>=1)||isNaN(a)||isNaN(b)||a>=b){m.style.color="#B3261E";m.textContent="Confira os valores: a mínima precisa ser menor que a máxima.";return}
+  cfg={nome:n,horas:h,tmin:a,tmax:b};
+  try{localStorage.setItem(KEY,JSON.stringify(cfg))}catch(e){}
+  m.style.color="";m.textContent="Configurações salvas.";setTimeout(function(){m.textContent=""},3000);check();live()});
+$("#dQuieto").addEventListener("click",function(){s.quiet=true;s.lastMove=Date.now()-cfg.horas*3600000-60000;check();live();show("alertas")});
+$("#dCalor").addEventListener("click",function(){s.hot=true;s.temp=cfg.tmax+2;check();live();show("alertas")});
+$("#dOff").addEventListener("click",function(){s.online=false;check();live();show("alertas")});
+$("#dOk").addEventListener("click",function(){s.quiet=false;s.hot=false;s.online=true;s.lastMove=Date.now();s.temp=26;s.lastUpdate=Date.now();check();live()});
+
+fill();live();drawGeral();renderAlerts();
+setInterval(tick,5000);setInterval(live,1000);
+})();
+</script>
+</body>
+</html>
